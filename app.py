@@ -3,7 +3,7 @@ from core import MarkdownReader
 import os
 
 doc_path = "./documents"
-app = Flask(__name__)
+app = Flask(__name__, template_folder="views")
 mr = MarkdownReader()
 list_file = mr.listDocumments(doc_path)
 file_list = mr.listData(doc_path)
