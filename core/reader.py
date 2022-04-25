@@ -5,6 +5,62 @@ import re
 
 class MarkdownReader:
 
+    def __find_index(self, arr = [], query = ""):
+        """
+        It takes an array of objects and a query string, and returns the index of the object in the array
+        whose name property matches the query string
+        
+        :param arr: The array to search through
+        :param query: The query string to search for
+        :return: The index of the item in the array that matches the query.
+        """
+        for i, v in enumerate(arr):
+            if v["name"] == query:
+                return i
+        return 0
+
+    def listData(self, path):
+        """
+        It walks through the directory, and creates a list of dictionaries, each dictionary representing a
+        folder or file
+        
+        :param path: The path to the directory you want to list
+        :return: list of dictionary
+        """
+        data = []
+        # listing folder
+        for _, dirs, _ in os.walk(path, topdown=True):
+            for d in dirs:
+                context = {
+                    "name": d,
+                    "type": "folder",
+                    "file": []
+                }
+                data.append(context)
+
+        # listing file
+        for root, dirs, files in os.walk(path, topdown=True):
+            for f in files:
+                file_path = os.path.join(root, f)
+                split = file_path.split("/")
+
+                # looking for files's folder name
+                if len(split) > 3:
+                    folder_name = file_path.split("/")[2]
+
+                    # find data by spesific value on list of dictionary
+                    index = self.__find_index(data, folder_name)
+                    data[index]['file'].append(f)
+
+                # if there's no file inside folder the file will store to list of data
+                elif len(split) > 2 and len(split) < 4:
+                    data.append({
+                        "name": split[2],
+                        "type": "file",
+                        "file": []
+                    })
+        return data
+
     def listDocumments(self, path):
         """
         List all existing markdown documments
