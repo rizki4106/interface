@@ -3,13 +3,14 @@ import markdown
 import os
 import re
 
+
 class MarkdownReader:
 
-    def __find_index(self, arr = [], query = ""):
+    def __find_index(self, arr=[], query=""):
         """
         It takes an array of objects and a query string, and returns the index of the object in the array
         whose name property matches the query string
-        
+
         :param arr: The array to search through
         :param query: The query string to search for
         :return: The index of the item in the array that matches the query.
@@ -23,7 +24,7 @@ class MarkdownReader:
         """
         It walks through the directory, and creates a list of dictionaries, each dictionary representing a
         folder or file
-        
+
         :param path: The path to the directory you want to list
         :return: list of dictionary
         """
@@ -70,13 +71,13 @@ class MarkdownReader:
         for f in os.listdir(path):
             if os.path.isfile(os.path.join(path, f)) and f.split(".")[-1].lower() == "md":
                 files.append(f)
-        
+
         return files
 
     def getHeadline(self, file):
         """
         It takes a file, reads it line by line, and if it finds a markdown headline, it appends it to a list
-        
+
         :param file: the file you want to parse
         :return: A list of headlines
         """
@@ -121,7 +122,7 @@ class MarkdownReader:
     def readMarkdown(self, path):
         """
         > This function reads a markdown file and returns the markdown as HTML
-        
+
         :param path: The path to the file you want to read
         :return: The readMarkdown function is returning the read variable.
         """

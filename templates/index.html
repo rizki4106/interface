@@ -1,23 +1,41 @@
 {% extends "./_snippets/base.html" %}
 
-{% block title %} Interface Documentation{% endblock %}
+{% block title %} {{context['title']}} - Interface Documentation{% endblock %}
 
+<!-- list file that exitst in folder documents -->
 {% block document %}
-    {% for file in context.file %}
-        <a href="/detail/{{file}}" class="menu-link">{{ file.split(".")[0] }}</a>
+    {% for file in context.data %}
+        {% if file['type'] == 'folder' %}
+            <div class="dropdown">
+                <div  class="label">
+                    <span>{{file.name}}</span>
+                    <i class="nav-icon bi bi-chevron-down" id="chevrons"></i>
+                </div>
+                <div class="dropdown-menus show">
+                    {% for f in file['file'] %}
+                        <a href="/detail/{{file['name']}}/{{f}}" class="menu-link">{{f}}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <a href="/detail/file/{{file['name']}}" class="menu-link">{{ file["name"].split(".")[0] }}</a>
+        {% endif %}
     {% endfor %}
 {% endblock %}
 
+<!-- table of content for mobile view -->
 {% block tableofcontent %}
     {% for headline in context.headline_init %}
         <a href="/" class="sidebar-right-link">{{headline}}</a>
     {% endfor %}
 {% endblock %}
 
+<!-- body of the content -->
 {% block content %}
     {{context.file_init | safe}}
 {% endblock %}
 
+<!-- table of content for descktop ( sidebar right ) -->
 {% block tableofcontentdesktop %}
     {% for headline in context.headline_init %}
         <a data_href="#{{headline.lower().replace(' ', '-')}}" class="sidebar-right-link">{{headline}}</a>
