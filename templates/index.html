@@ -1,0 +1,25 @@
+{% extends "./_snippets/base.html" %}
+
+{% block title %} Interface Documentation{% endblock %}
+
+{% block document %}
+    {% for file in context.file %}
+        <a href="/detail/{{file}}" class="menu-link">{{ file.split(".")[0] }}</a>
+    {% endfor %}
+{% endblock %}
+
+{% block tableofcontent %}
+    {% for headline in context.headline_init %}
+        <a href="/" class="sidebar-right-link">{{headline}}</a>
+    {% endfor %}
+{% endblock %}
+
+{% block content %}
+    {{context.file_init | safe}}
+{% endblock %}
+
+{% block tableofcontentdesktop %}
+    {% for headline in context.headline_init %}
+        <a data_href="#{{headline.lower().replace(' ', '-')}}" class="sidebar-right-link">{{headline}}</a>
+    {% endfor %}
+{% endblock %}
