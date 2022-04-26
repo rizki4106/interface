@@ -54,15 +54,20 @@ class MarkdownReader:
 
                     # find data by spesific value on list of dictionary
                     index = self.__find_index(data, folder_name)
-                    data[index]['file'].append(f)
+
+                    # make sure just markdown file that included
+                    if f.split(".")[-1].lower() == "md":
+                        data[index]['file'].append(f)
 
                 # if there's no file inside folder the file will store to list of data
                 elif len(split) > 2 and len(split) < 4:
-                    data.append({
-                        "name": split[2],
-                        "type": "file",
-                        "file": []
-                    })
+
+                    if split[2].split(".")[-1].lower() == "md":
+                        data.append({
+                            "name": split[2],
+                            "type": "file",
+                            "file": []
+                        })
         return data
 
     def getHeadline(self, file):
