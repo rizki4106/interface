@@ -9,11 +9,13 @@ def home():
 
 @app.route("/detail/file/<filename>", methods=['GET'])
 def detail(filename):
-    return render_template("index.html", context=rc.readSingleFile(filename))
+    path = request.args.get("path")
+    return render_template("index.html", context=rc.readSingleFile(path))
 
 @app.route("/detail/<folder>/<file>", methods=["GET"])
 def get_by_folder(folder, file):
-    return render_template("index.html", context=rc.readFileInFolder(folder, file))
+    path = request.args.get("path")
+    return render_template("index.html", context=rc.readFileInFolder(path))
 
 @app.route("/search", methods=["GET"])
 def search():

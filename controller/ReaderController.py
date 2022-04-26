@@ -1,3 +1,4 @@
+import base64
 from core import MarkdownReader
 import os
 
@@ -16,9 +17,9 @@ class ReaderController:
         file_init = ""
         if len(file_list) > 0:
             if file_list[0]['type'] == "folder":
-                file_init = os.path.join(doc_path, file_list[0]['name'], file_list[0]['file'][0])
+                file_init = mr.decodePath(file_list[0]['file'][0]['path'])
             else:
-                file_init = os.path.join(doc_path, file_list[0]['name'])
+                file_init = mr.decodePath(file_list[0]['path'])
             
         context = {
             'file_init': mr.readMarkdown(file_init),
@@ -28,7 +29,7 @@ class ReaderController:
 
         return context
 
-    def readFileInFolder(self, folder = "", file = ""):
+    def readFileInFolder(self, path = ""):
         """
         It reads the file in the folder and returns the context
         
@@ -41,41 +42,38 @@ class ReaderController:
             - title: the title of the markdown file
         """
         file_read = ""
-        headline = []
+        path = mr.decodePath(path)
 
-        if os.path.exists(os.path.join(doc_path, folder, file)):
-            file_read = mr.readMarkdown(os.path.join(doc_path, folder, file))
-            headline = mr.getHeadline(os.path.join(doc_path, folder, file))
+        file_read = mr.readMarkdown(path)
+        headline = mr.getHeadline(path)
 
         context = {
             'file_init': file_read,
             'headline_init': headline,
             'data': file_list,
-            'title': file.split(".")[0]
+            'title': path.split("/")[-1].split(".")[0]
         }
 
         return context
 
 
-    def readSingleFile(self, filename = ""):
+    def readSingleFile(self, path = ""):
         """
         It reads a single file and returns the file content and headline
         
         :param filename: the name of the file to be read
         :return: A dictionary with the file content, the headlines, the file list and the title of the file.
         """
-        file = ""
         headline = []
-
-        if os.path.exists(os.path.join(doc_path, filename)):
-            file = mr.readMarkdown(os.path.join(doc_path, filename))
-            headline = mr.getHeadline(os.path.join(doc_path, filename))
+        path = mr.decodePath(path)
+        file = mr.readMarkdown(path)
+        headline = mr.getHeadline(path)
 
         context = {
             'file_init': file,
             'headline_init': headline,
             'data': file_list,
-            'title': filename.split(".")[0]
+            'title': path.split("/")[-1].split(".")[0]
         }
 
         return context

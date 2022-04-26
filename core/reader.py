@@ -1,10 +1,21 @@
 from bs4 import BeautifulSoup
 import markdown
+import base64
 import os
 import re
 
 
 class MarkdownReader:
+
+    def decodePath(self, path = ""):
+        """
+        It takes a string, encodes it to ascii, then decodes it from base64 to ascii
+        
+        :param path: The path to the file you want to read
+        :return: The path is being returned.
+        """
+        path = path.encode("ascii")
+        return base64.b64decode(path).decode("ascii")
 
     def __init__(self, path = ""):
         self.global_path = path
@@ -32,15 +43,19 @@ class MarkdownReader:
         :return: list of dictionary
         """
         data = []
+        list_folder = []
         # listing folder
-        for _, dirs, _ in os.walk(self.global_path, topdown=True):
+        for root, dirs, _ in os.walk(self.global_path, topdown=True):
             for d in dirs:
                 context = {
                     "name": d,
                     "type": "folder",
                     "file": []
                 }
-                data.append(context)
+                split_path = os.path.join(root, d).split("/")
+                if len(split_path) <= 3 and d not in list_folder:
+                    list_folder.append(d)
+                    data.append(context)
 
         # listing file
         for root, dirs, files in os.walk(self.global_path, topdown=True):
@@ -57,7 +72,10 @@ class MarkdownReader:
 
                     # make sure just markdown file that included
                     if f.split(".")[-1].lower() == "md":
-                        data[index]['file'].append(f)
+                        data[index]['file'].append({
+                            "name": f,
+                            "path": base64.b64encode(os.path.join(root, f).encode("utf-8")).decode("ascii")
+                        })
 
                 # if there's no file inside folder the file will store to list of data
                 elif len(split) > 2 and len(split) < 4:
@@ -66,9 +84,11 @@ class MarkdownReader:
                         data.append({
                             "name": split[2],
                             "type": "file",
+                            "path": base64.b64encode(os.path.join(root, f).encode("utf-8")).decode("ascii"),
                             "file": []
                         })
         return data
+    
 
     def getHeadline(self, file):
         """
@@ -115,7 +135,7 @@ class MarkdownReader:
 
         return headlines
 
-    def readMarkdown(self, path):
+    def readMarkdown(self, path = ""):
         """
         > This function reads a markdown file and returns the markdown as HTML
 
@@ -157,13 +177,13 @@ class MarkdownReader:
                 score = []
                 path = []
                 for f  in d['file']:
-                    file = os.path.join(self.global_path, d['name'], f)
+                    file = self.decodePath(f['path'])
 
                     with open(file, "r") as r:
                         read = r.read()
                         soup = BeautifulSoup(markdown.markdown(read), "html.parser").get_text()
                         score.append(len(re.findall(query, soup)))
-                        path.append(os.path.join(self.global_path, d['name'], f))
+                        path.append(self.decodePath(f['path']))
                         r.close()
                 
                 global_score = score[score.index(max(score))]
@@ -174,11 +194,11 @@ class MarkdownReader:
                 file_score = []
                 file_path = []
 
-                with open(os.path.join(self.global_path, d['name']), "r") as r:
+                with open(self.decodePath(d['path']), "r") as r:
                     read = r.read()
                     soups = BeautifulSoup(markdown.markdown(read), "html.parser").get_text()
                     file_score.append(len(re.findall(query, soups)))
-                    file_path.append(os.path.join(self.global_path, d['name']))
+                    file_path.append(self.decodePath(d['path']))
                     r.close()
 
                 global_score = file_score[file_score.index(max(file_score))]
