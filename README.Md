@@ -1,3 +1,3 @@
 ## Interface
 
-It's still finishing up, Will be lunched on May 5th 2022
+Still not finished, and will be launched on 5th may 2022
