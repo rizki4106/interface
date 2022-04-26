@@ -40,7 +40,6 @@ function initStyle() {
 
     // listening event dropdown menu on sidebar left
     const dropdown_menu = document.querySelectorAll(".dropdown-menus");
-    const chevron = document.querySelectorAll("#chevrons");
     document.querySelectorAll(".dropdown").forEach((items, i) => {
       // show or close dropdown menu
       items.addEventListener("click", () => {
@@ -49,17 +48,6 @@ function initStyle() {
         dropdown_menu.forEach((el, id) => {
           if (id !== i) {
             dropdown_menu[id].classList.remove("show");
-            chevron[id].classList.add;
-          }
-        });
-
-        chevron.forEach((el, id) => {
-          if (i !== id) {
-            el.classList.add("bi-chevron-up");
-            el.classList.remove("bi-chevron-down");
-          } else {
-            el.classList.remove("bi-chevron-up");
-            el.classList.add("bi-chevron-down");
           }
         });
       });
