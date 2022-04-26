@@ -80,7 +80,29 @@ class ReaderController:
 
         return context
 
+    def search(self, query):
+        """
+        It searches for a file that contains the query, reads the file, gets the headline, and returns the
+        file, headline, and file list
+        
+        :param query: The search query
+        :return: The context is being returned.
+        """
+
+        founded_file = mr.search(query)
+        file = mr.readMarkdown(founded_file)
+        headline = mr.getHeadline(founded_file)
+
+        context = {
+            'file_init': file,
+            'headline_init': headline,
+            'data': file_list,
+            'title': founded_file.split("/")[-1].split(".")[0]
+        }
+
+        return context
+
 
 if __name__ != "__main__":
-    
+
     reader_controller = ReaderController()
