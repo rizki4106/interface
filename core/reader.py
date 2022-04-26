@@ -6,6 +6,9 @@ import re
 
 class MarkdownReader:
 
+    def __init__(self, path = ""):
+        self.global_path = path
+
     def __find_index(self, arr=[], query=""):
         """
         It takes an array of objects and a query string, and returns the index of the object in the array
@@ -20,7 +23,7 @@ class MarkdownReader:
                 return i
         return 0
 
-    def listData(self, path):
+    def listData(self):
         """
         It walks through the directory, and creates a list of dictionaries, each dictionary representing a
         folder or file
@@ -30,7 +33,7 @@ class MarkdownReader:
         """
         data = []
         # listing folder
-        for _, dirs, _ in os.walk(path, topdown=True):
+        for _, dirs, _ in os.walk(self.global_path, topdown=True):
             for d in dirs:
                 context = {
                     "name": d,
@@ -40,7 +43,7 @@ class MarkdownReader:
                 data.append(context)
 
         # listing file
-        for root, dirs, files in os.walk(path, topdown=True):
+        for root, dirs, files in os.walk(self.global_path, topdown=True):
             for f in files:
                 file_path = os.path.join(root, f)
                 split = file_path.split("/")
@@ -61,18 +64,6 @@ class MarkdownReader:
                         "file": []
                     })
         return data
-
-    def listDocumments(self, path):
-        """
-        List all existing markdown documments
-        """
-        files = []
-
-        for f in os.listdir(path):
-            if os.path.isfile(os.path.join(path, f)) and f.split(".")[-1].lower() == "md":
-                files.append(f)
-
-        return files
 
     def getHeadline(self, file):
         """
@@ -136,3 +127,59 @@ class MarkdownReader:
                 return ""
         except:
             return ""
+
+    def search(self, query):
+        """
+        > It takes a query, searches through all the files in the directory, and returns the path of the
+        file with the highest score
+        
+        :param query: The query string to search for
+        :return: The path of the file that has the highest score.
+        """
+
+        data = self.listData()
+        result_score = []
+        result_path = []
+
+        for d in data:
+
+            global_score = 0
+            global_path = ''
+
+            # read file inside the folder
+            if d['type'] == "folder":
+
+                score = []
+                path = []
+                for f  in d['file']:
+                    file = os.path.join(self.global_path, d['name'], f)
+
+                    with open(file, "r") as r:
+                        read = r.read()
+                        soup = BeautifulSoup(markdown.markdown(read), "html.parser").get_text()
+                        score.append(len(re.findall(query, soup)))
+                        path.append(os.path.join(self.global_path, d['name'], f))
+                        r.close()
+                
+                global_score = score[score.index(max(score))]
+                global_path = path[score.index(max(score))]
+
+            else:
+
+                file_score = []
+                file_path = []
+
+                with open(os.path.join(self.global_path, d['name']), "r") as r:
+                    read = r.read()
+                    soups = BeautifulSoup(markdown.markdown(read), "html.parser").get_text()
+                    file_score.append(len(re.findall(query, soups)))
+                    file_path.append(os.path.join(self.global_path, d['name']))
+                    r.close()
+
+                global_score = file_score[file_score.index(max(file_score))]
+                global_path = file_path[file_score.index(max(file_score))]
+
+            result_score.append(global_score)
+            result_path.append(global_path)
+
+        return result_path[result_score.index(max(result_score))]
