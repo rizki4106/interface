@@ -4,18 +4,26 @@
 
 <!-- list file that exitst in folder documents -->
 {% block document %}
-    {% for file in context.data %}
+    {% for  file in context.data %}
         {% if file['type'] == 'folder' %}
             <div class="dropdown">
                 <div  class="label">
                     <span>{{file.name}}</span>
                     <i class="nav-icon bi bi-chevron-down" id="chevrons"></i>
                 </div>
-                <div class="dropdown-menus show">
-                    {% for f in file['file'] %}
-                        <a href="/detail/{{file['name']}}/{{f}}" class="menu-link">{{f}}</a>
-                    {% endfor %}
-                </div>
+                {% if loop.index0 == 0 %}
+                    <div class="dropdown-menus show">
+                        {% for f in file['file'] %}
+                            <a href="/detail/{{file['name']}}/{{f}}" class="menu-link">{{f}}</a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="dropdown-menus">
+                        {% for f in file['file'] %}
+                            <a href="/detail/{{file['name']}}/{{f}}" class="menu-link">{{f}}</a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
         {% else %}
             <a href="/detail/file/{{file['name']}}" class="menu-link">{{ file["name"].split(".")[0] }}</a>
