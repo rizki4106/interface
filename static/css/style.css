@@ -70,7 +70,7 @@
 }
 /* content section */
 .content {
-  flex: 1;
+  width: 800px;
   border-left: 1px solid #dfd3d3;
   border-right: 1px solid #dfd3d3;
   min-height: 100vh;
@@ -179,6 +179,7 @@
   .content {
     padding: 0px 0px 20px 0px;
     border: none;
+    width: 100%;
   }
   .table-content-wrapper {
     display: block;
